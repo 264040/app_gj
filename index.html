@@ -4,7 +4,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>国际音标学习</title>
     <link rel="stylesheet" href="./css/styles.css">
     <link href="./favicon.ico">
@@ -17,13 +16,12 @@
                 src="https://www.xdf.cn/zhuanti/bd-phonetic-alphabet-card/resource/img/top-bg-c763567.png"
                 class="top_img">
         </div>
-
     </header>
 
     <div class="theme-switch" onclick="toggleDarkMode()">🌙</div>
 
     <section class="content">
-        <p>点击音标按钮听发音</p>
+        <p>点击音标发音</p>
 
         <!-- 动态生成选项卡 -->
         <div class="tabs" id="tabs">
@@ -35,176 +33,106 @@
             <!-- 音标按钮会动态渲染到这里 -->
         </div>
     </section>
+
+    <div id="diagram-container" class="diagram-container">
+        <p>点击音标查看图解</p>
+    </div>
     <div class="coming-soon">
         敬请期待...
     </div>
+
+    <script src="./js/toggleDarkMode.js"></script>
     <script>
-        // 切换黑夜白天模式
-        function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode');
-            const themeIcon = document.querySelector('.theme-switch');
-            if (document.body.classList.contains('dark-mode')) {
-                themeIcon.textContent = '🌞'; // 白天模式图标
-            } else {
-                themeIcon.textContent = '🌙'; // 夜间模式图标
+
+        async function getJsonData() {
+            try {
+                const response = await fetch("https://264040.github.io/app_gj/js/jsons.json");
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                const data = await response.json();
+                console.log(data, 1111); // 输出 JSON 数据
+
+                // 动态生成选项卡
+                function generateTabs(e) {
+                    const tabsContainer = document.getElementById('tabs');
+                    // 遍历 ipaData 创建选项卡
+                    Object.keys(data).forEach(key => {
+                        const tabBtn = document.createElement('div');
+                        tabBtn.classList.add('tab-btn');
+                        tabBtn.textContent = data[key].name;
+                        tabBtn.id = key + '-tab';
+                        tabBtn.onclick = () => showTab(key);
+                        tabsContainer.appendChild(tabBtn);
+                    });
+
+                    // 默认显示第一个选项卡
+                    const firstTab = Object.keys(data)[0];
+                    showTab(firstTab);
+                }
+
+                // 渲染音标按钮
+                function renderIpaButtons(type) {
+                    const container = document.getElementById('ipa-container');
+                    container.innerHTML = ''; // 清空现有内容
+
+                    data[type].symbols.forEach(item => {
+                        const button = document.createElement('div');
+                        button.classList.add('ipa-btn');
+                        button.textContent = item.symbol;
+                        button.onclick = () => {
+                            playSound(item.audio);
+                            showDiagram(item.diagram);
+                        };
+                        container.appendChild(button);
+                    });
+                }
+                // ——————————————————————————————————————————————————————————————————————————
+                // 显示图解
+                function showDiagram(imagePath) {
+                    const diagramContainer = document.getElementById('diagram-container');
+                    diagramContainer.innerHTML = ''; // 清空图解容器
+
+                    const img = document.createElement('img');
+                    img.src = imagePath;
+                    img.alt = "音标图解";
+
+                    diagramContainer.appendChild(img);
+                }
+
+                // ————————————————————————————————————————————————————————————————————————————
+                // 播放音标发音
+                function playSound(file) {
+                    let audio = new Audio(file);
+                    audio.play();
+                }
+
+                // 切换选项卡
+                function showTab(tabName) {
+                    // 隐藏所有选项卡内容
+                    let tabBtns = document.querySelectorAll('.tab-btn');
+                    tabBtns.forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+
+                    // 激活当前选项卡按钮
+                    let activeBtn = document.getElementById(tabName + '-tab');
+                    activeBtn.classList.add('active');
+
+                    // 渲染对应的音标按钮
+                    renderIpaButtons(tabName);
+                }
+
+
+
+                // 初始化页面
+                generateTabs();
+            } catch (error) {
+                console.error('000', error);
             }
         }
 
-        // 音标数据，支持多个类别
-        const ipaData = {
-            "vowels": {
-                name: "长元音",
-                symbols: [
-                    { "symbol": "[ iː ]", "audio": "./Articulation/key_iː.mp3" },
-                    { "symbol": "[ ɑː ]", "audio": "./Articulation/key_ɑː.mp3" },
-                    { "symbol": "[ ɔː ]", "audio": "./Articulation/key_ɔː.mp3" },
-                    { "symbol": "[ uː ]", "audio": "./Articulation/key_uː.mp3" },
-                    { "symbol": "[ ɜː ]", "audio": "./Articulation/key_ɜː.mp3" }
-                ]
-            },
-            "consonants": {
-                name: "短元音",
-                symbols: [
-                    { "symbol": "[ ɪ ]", "audio": "./Articulation/key_ɪ.mp3" },
-                    { "symbol": "[ ə ]", "audio": "./Articulation/key_ə.mp3" },
-                    { "symbol": "[ ʌ ]", "audio": "./Articulation/key_ʌ.mp3" },
-                    { "symbol": "[ ɒ ]", "audio": "./Articulation/key_ɒ.mp3" },
-                    { "symbol": "[ ʊ ]", "audio": "./Articulation/key_ʊ.mp3" },
-                    { "symbol": "[ æ ]", "audio": "./Articulation/key_æ.mp3" },
-                    { "symbol": "[ e ]", "audio": "./Articulation/key_e.mp3" }
-                ]
-            },
-            "diphthongs": {
-                name: "双元音",
-                symbols: [
-                    { "symbol": "[ eɪ ]", "audio": "./Articulation/key_eɪ.mp3" },
-                    { "symbol": "[ aɪ ]", "audio": "./Articulation/key_aɪ.mp3" },
-                    { "symbol": "[ ɔɪ ]", "audio": "./Articulation/key_ɔɪ.mp3" },
-                    { "symbol": "[ aʊ ]", "audio": "./Articulation/key_aʊ.mp3" },
-                    { "symbol": "[ əʊ ]", "audio": "./Articulation/key_əʊ.mp3" },
-                    { "symbol": "[ ɪə ]", "audio": "./Articulation/key_ɪə.mp3" },
-                    { "symbol": "[ eə ]", "audio": "./Articulation/key_eə.mp3" },
-                    { "symbol": "[ ʊə ]", "audio": "./Articulation/key_ʊə.mp3" }
-                ]
-            },
-            "nasals": {
-                name: "爆破音",
-                symbols: [
-                    { "symbol": "[ p ]", "audio": "./Articulation/key_p.mp3" },
-                    { "symbol": "[ b ]", "audio": "./Articulation/key_b.mp3" },
-                    { "symbol": "[ t ]", "audio": "./Articulation/key_t.mp3" },
-                    { "symbol": "[ d ]", "audio": "./Articulation/key_d.mp3" },
-                    { "symbol": "[ k ]", "audio": "./Articulation/key_k.mp3" },
-                    { "symbol": "[ g ]", "audio": "./Articulation/key_g.mp3" }
-                ]
-            },
-            "bruitdebruit": {
-                name: "擦破音",
-                symbols: [
-                    { "symbol": "[ f ]", "audio": "./Articulation/key_f.mp3" },
-                    { "symbol": "[ v ]", "audio": "./Articulation/key_v.mp3" },
-                    { "symbol": "[ s ]", "audio": "./Articulation/key_s.mp3" },
-                    { "symbol": "[ z ]", "audio": "./Articulation/key_z.mp3" },
-                    { "symbol": "[ θ ]", "audio": "./Articulation/key_θ.mp3" },
-                    { "symbol": "[ ð ]", "audio": "./Articulation/key_ð.mp3" },
-                    { "symbol": "[ ʃ ]", "audio": "./Articulation/key_ʃ.mp3" },
-                    { "symbol": "[ ʒ ]", "audio": "./Articulation/key_ʒ.mp3" },
-                    { "symbol": "[ h ]", "audio": "./Articulation/key_h.mp3" }
-                ]
-            },
-            "affricate": {
-                name: "塞擦音",
-                symbols: [
-                    { "symbol": "[ tʃ ]", "audio": "./Articulation/key_tʃ.mp3" },
-                    { "symbol": "[ dʒ ]", "audio": "./Articulation/key_dʒ.mp3" },
-                    { "symbol": "[ tr ]", "audio": "./Articulation/key_tr.mp3" },
-                    { "symbol": "[ dr ]", "audio": "./Articulation/key_dr.mp3" },
-                    { "symbol": "[ ts ]", "audio": "./Articulation/key_ts.mp3" },
-                    { "symbol": "[ dz ]", "audio": "./Articulation/key_dz.mp3" }
-                ]
-            },
-            "nasalconsonant": {
-                name: "鼻辅音",
-                symbols: [
-                    { "symbol": "[ m ]", "audio": "./Articulation/key_m.mp3" },
-                    { "symbol": "[ n ]", "audio": "./Articulation/key_n.mp3" },
-                    { "symbol": "[ ŋ ]", "audio": "./Articulation/key_ŋ.mp3" }
-                ]
-            },
-            "lingual": {
-                name: "鼻辅音",
-                symbols: [
-                    { "symbol": "[ l ]", "audio": "./Articulation/key_l.mp3" },
-                    { "symbol": "[ r ]", "audio": "./Articulation/key_r.mp3" }
-                ]
-            },
-            "semivowel": {
-                name: "半元音",
-                symbols: [
-                    { "symbol": "[ j ]", "audio": "./Articulation/key_j.mp3" },
-                    { "symbol": "[ w ]", "audio": "./Articulation/key_w.mp3" }
-                ]
-            }
-        };
-
-
-        // 动态生成选项卡
-        function generateTabs() {
-            const tabsContainer = document.getElementById('tabs');
-
-            // 遍历 ipaData 创建选项卡
-            Object.keys(ipaData).forEach(key => {
-                const tabBtn = document.createElement('div');
-                tabBtn.classList.add('tab-btn');
-                tabBtn.textContent = ipaData[key].name;
-                tabBtn.id = key + '-tab';
-                tabBtn.onclick = () => showTab(key);
-                tabsContainer.appendChild(tabBtn);
-            });
-
-            // 默认显示第一个选项卡
-            const firstTab = Object.keys(ipaData)[0];
-            showTab(firstTab);
-        }
-
-        // 渲染音标按钮
-        function renderIpaButtons(type) {
-            const container = document.getElementById('ipa-container');
-            container.innerHTML = ''; // 清空现有内容
-
-            ipaData[type].symbols.forEach(item => {
-                const button = document.createElement('div');
-                button.classList.add('ipa-btn');
-                button.textContent = item.symbol;
-                button.onclick = () => playSound(item.audio);
-                container.appendChild(button);
-            });
-        }
-
-        // 播放音标发音
-        function playSound(file) {
-            let audio = new Audio(file);
-            audio.play();
-        }
-
-        // 切换选项卡
-        function showTab(tabName) {
-            // 隐藏所有选项卡内容
-            let tabBtns = document.querySelectorAll('.tab-btn');
-            tabBtns.forEach(btn => {
-                btn.classList.remove('active');
-            });
-
-            // 激活当前选项卡按钮
-            let activeBtn = document.getElementById(tabName + '-tab');
-            activeBtn.classList.add('active');
-
-            // 渲染对应的音标按钮
-            renderIpaButtons(tabName);
-        }
-
-        // 初始化页面
-        generateTabs();
+        getJsonData();
     </script>
 </body>
 
