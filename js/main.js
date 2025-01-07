@@ -1,6 +1,6 @@
 async function getJsonData() {
     try {
-        const response = await fetch("https://264040.github.io/app_gj/js/jsons.json");
+        const response = await fetch("https://appgj.netlify.app/js/jsons.json");
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
