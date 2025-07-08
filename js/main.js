@@ -1,6 +1,18 @@
 async function getJsonData() {
     try {
-        const response = await fetch("https://appgj.netlify.app/js/jsons.json");
+        const API_URLS = ｛
+            "oooooooooooooooooo.online": "https://oooooooooooooooooo.online/", 
+            "www.oooooooooooooooooo.online": "https://www.oooooooooooooooooo.online/", 
+            "appgj.netlify.app": "https://appgj.netlify.app/"
+        ｝
+        const domain = window.location.hostname;
+        // 示例输出: "www.example.com"
+        
+        const apiUrl = API_URLS[domain || "appgj.netlify.app"];
+        
+        
+        const response = await fetch(`${piUrl + "js/jsons.json"}`);
+        
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
