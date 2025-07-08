@@ -11,7 +11,7 @@ async function getJsonData() {
         const apiUrl = API_URLS[domain || "appgj.netlify.app"];
         
         
-        const response = await fetch(`${piUrl + "js/jsons.json"}`);
+        const response = await fetch(`${apiUrl + "js/jsons.json"}`);
         
         if (!response.ok) {
             throw new Error('Network response was not ok');
