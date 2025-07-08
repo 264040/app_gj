@@ -1,10 +1,10 @@
 async function getJsonData() {
     try {
-        const API_URLS = ｛
+        const API_URLS = {
             "oooooooooooooooooo.online": "https://oooooooooooooooooo.online/", 
             "www.oooooooooooooooooo.online": "https://www.oooooooooooooooooo.online/", 
             "appgj.netlify.app": "https://appgj.netlify.app/"
-        ｝
+        };
         const domain = window.location.hostname;
         // 示例输出: "www.example.com"
         
