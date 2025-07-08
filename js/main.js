@@ -8,7 +8,8 @@ async function getJsonData() {
         const domain = window.location.hostname;
         // 示例输出: "www.example.com"
         
-        const apiUrl = API_URLS[domain || "appgj.netlify.app"];
+       // const apiUrl = API_URLS[domain || "appgj.netlify.app"];
+        const apiUrl = API_URLS[domain];
         
         
         const response = await fetch(`${apiUrl + "js/jsons.json"}`);
